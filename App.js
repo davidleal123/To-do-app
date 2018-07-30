@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage, Button } from 'react-native';
 import Header from './Header';
 import Body from './Body';
 
@@ -12,17 +12,56 @@ class App extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.recuperarEnTelefono();
+  }
+
   establecerTexto = (value) => {
     this.setState({ texto: value });
   }
 
   agregarTarea = () => {
+    const nuevasTareas = [...this.state.tareas, { texto: this.state.texto, key: Date.now().toString() }];
+    this.guardarEnTelefono(nuevasTareas);
     this.setState({
-      tareas: [...this.state.tareas, this.state.texto],
+      tareas: nuevasTareas,
       texto: '',
     });
-    console.log(this.state.tareas.length);
   };
+
+  eliminarTarea = (id) => {
+    const nuevasTareas = this.state.tareas.filter(tarea => tarea.key !== id);
+    this.guardarEnTelefono(nuevasTareas);
+    this.setState({
+      tareas: nuevasTareas,
+    });
+  }
+
+  guardarEnTelefono = (tareas) => {
+    AsyncStorage.setItem('@AppCursoUdemy:tareas', JSON.stringify(tareas))
+      .then((value) => {
+        console.log(value);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  recuperarEnTelefono = () => {
+    AsyncStorage.getItem('@AppCursoUdemy:tareas')
+      .then((value) => {
+        if (value !== null) {
+          const nuevasTareas = JSON.parse(value);
+          this.setState({
+            tareas: nuevasTareas,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
 
   render() {
     return (
@@ -32,8 +71,15 @@ class App extends React.Component {
           cambiarTexto={this.establecerTexto}
           agregar={this.agregarTarea}
         />
-        <Text>{this.state.texto}</Text>
-        <Body tareas={this.state.tareas} />
+        <Button
+          title="Guardar"
+          onPress={() => { this.guardarEnTelefono(); }}
+        />
+        <Button
+          title="Recuperar"
+          onPress={() => { this.recuperarEnTelefono(); }}
+        />
+        <Body tareas={this.state.tareas} eliminar={this.eliminarTarea} />
       </View>
     );
   }

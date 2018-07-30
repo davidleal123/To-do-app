@@ -1,19 +1,16 @@
 // import liraries
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
+import Tarea from './Tarea';
 
 // create a component
 class Body extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text>Body</Text>
                 <FlatList
                     data={this.props.tareas}
-                    renderItem={(elemento) => {
-                    console.log(elemento);
-                        return <text>1</text>;
-                    }}
+                    renderItem={({ item }) => <Tarea item={item} eliminar={this.props.eliminar} />}
                 />
             </View>
         );

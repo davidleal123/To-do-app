@@ -14,7 +14,8 @@
         "react/destructuring-assignment": 0,
         "react/prop-types":0,
         "react/no-access-state-in-setstate": 0,
-        "no-console":0
+        "no-console":0,
+        "max-len":0
     
     }
 }
