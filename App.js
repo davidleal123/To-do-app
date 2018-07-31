@@ -9,6 +9,7 @@ class App extends React.Component {
     this.state = {
       tareas: [],
       texto: '',
+      cargando: true,
     };
   }
 
@@ -38,6 +39,7 @@ class App extends React.Component {
   }
 
   guardarEnTelefono = (tareas) => {
+    console.log(tareas);
     AsyncStorage.setItem('@AppCursoUdemy:tareas', JSON.stringify(tareas))
       .then((value) => {
         console.log(value);
@@ -50,6 +52,12 @@ class App extends React.Component {
   recuperarEnTelefono = () => {
     AsyncStorage.getItem('@AppCursoUdemy:tareas')
       .then((value) => {
+        setTimeout(() => {
+          this.setState({
+            cargando: false,
+          });
+        }, 5000);
+
         if (value !== null) {
           const nuevasTareas = JSON.parse(value);
           this.setState({
@@ -59,6 +67,9 @@ class App extends React.Component {
       })
       .catch((err) => {
         console.log(err);
+        this.setState({
+          cargando: false,
+        });
       });
   }
 
@@ -71,15 +82,15 @@ class App extends React.Component {
           cambiarTexto={this.establecerTexto}
           agregar={this.agregarTarea}
         />
-        <Button
+        {/* <Button
           title="Guardar"
           onPress={() => { this.guardarEnTelefono(); }}
         />
         <Button
           title="Recuperar"
           onPress={() => { this.recuperarEnTelefono(); }}
-        />
-        <Body tareas={this.state.tareas} eliminar={this.eliminarTarea} />
+        /> */}
+        <Body tareas={this.state.tareas} eliminar={this.eliminarTarea} cargando={this.state.cargando} />
       </View>
     );
   }
